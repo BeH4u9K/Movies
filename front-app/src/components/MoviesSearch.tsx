@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MoviesHeader from './MoviesHeader';
 import { styled } from '@mui/system';
 import { Select, MenuItem, FormControl, InputLabel, TextField as MuiTextField } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useSelects } from './CustomSelect';
 import { useGetFilteredMoviesQuery } from '../services/api';
+import MoviesFooter from './MuviesFooter';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface Movie {
   id: number;
@@ -27,7 +29,6 @@ const DivSearch = styled('div')({
   justifyContent: 'center',
   textAlign: 'center',
   alignItems: 'center',
-  backgroundColor: 'goldenrod',
 });
 
 const H1Search = styled('h1')({
@@ -180,17 +181,15 @@ const ContainerMovieOutput = styled('div')({
   justifyContent: 'center',
   textAlign: 'center',
   alignItems: 'center',
-  backgroundColor: 'darkblue',
 });
 
 const DivContainerMovieOutput = styled('div')({
   width: '90%',
   minHeight: '100vh',
   display: 'grid',
-  gridTemplateColumns: 'repeat(4, 1fr)', // Четыре фильма в строку
+  gridTemplateColumns: 'repeat(4, 1fr)',
   gap: '20px',
   margin: '0 auto',
-  backgroundColor: 'greenyellow',
   padding: '2%',
   boxSizing: 'border-box',
   justifyContent: 'center',
@@ -198,7 +197,6 @@ const DivContainerMovieOutput = styled('div')({
 });
 
 const DivMovie = styled('div')({
-  backgroundColor: 'silver',
   width: '100%',
   maxWidth: '211px',
   height: '400px',
@@ -216,6 +214,7 @@ const DivImg = styled('div')({
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
   backgroundColor: 'darkcyan',
+  cursor: 'pointer', // Добавляем указатель для показа, что элемент кликабелен
 });
 
 const H1Movie = styled('h3')({
@@ -232,12 +231,11 @@ const ContainerAddMore = styled('div')({
   justifyContent: 'center',
   textAlign: 'center',
   alignItems: 'center',
-  backgroundColor: 'gold'
 });
 
 const DivBtnAddMore = styled('div')({
-  width:'10%',
-})
+  width: '10%',
+});
 
 const TextBtnAddMore = styled('h3')({
   fontFamily: 'Cambria',
@@ -247,10 +245,19 @@ const TextBtnAddMore = styled('h3')({
 });
 
 const MoviesSearch = () => {
+  const navigate = useNavigate();
   const { selectedOptions, handleChange } = useSelects();
   const [year, setYear] = useState<string>('');
-  const [rating, setRating] = useState<string>('');
-  const [filters, setFilters] = useState<{ category: string; genre: string; country: string; year?: number; rating: string }>({
+  const [rating, setRating] = useState<string>(''); 
+  const { category } = useParams();
+  
+  const [filters, setFilters] = useState<{
+    category: string;
+    genre: string;
+    country: string;
+    year: number | undefined;
+    rating: string | number;
+  }>({
     category: '',
     genre: '',
     country: '',
@@ -258,7 +265,17 @@ const MoviesSearch = () => {
     rating: '',
   });
 
+  useEffect(() => {
+    if (category) {
+      setFilters(prevFilters => ({ ...prevFilters, category }));
+    }
+  }, [category]);
+
   const { data: movies, isLoading, error } = useGetFilteredMoviesQuery(filters);
+
+  const handleOpenViewer = (id: number) => {
+    navigate(`/MoviesViewer/${id}`);
+  };
 
   const labels = ['Категория', 'Жанр', 'Страна'];
 
@@ -267,7 +284,7 @@ const MoviesSearch = () => {
       { value: 'movie', label: 'Фильм' },
       { value: 'tv-series', label: 'Сериал' },
       { value: 'anime', label: 'Аниме' },
-      { value: 'animation', label: 'Мультфильм' },
+      { value: 'cartoon', label: 'Мультфильм' },
     ],
     [
       { value: 'biography', label: 'Биография' },
@@ -284,7 +301,6 @@ const MoviesSearch = () => {
       { value: 'russia', label: 'Россия' },
       { value: 'uk', label: 'Великобритания' },
       { value: 'india', label: 'Индия' },
-      { value: 'south-korea', label: 'Южная Корея' },
       { value: 'spain', label: 'Испания' },
       { value: 'germany', label: 'Германия' },
       { value: 'italy', label: 'Италия' },
@@ -315,7 +331,7 @@ const MoviesSearch = () => {
       genre: selectedGenre,
       country: selectedCountry,
       year: isNaN(yearNum) ? undefined : yearNum,
-      rating: isNaN(ratingNum) ? '' : rating,
+      rating: isNaN(ratingNum) ? '' : ratingNum,
     };
 
     setFilters(newFilters);
@@ -370,7 +386,10 @@ const MoviesSearch = () => {
         <DivContainerMovieOutput>
           {movies?.docs.map((movie: Movie) => (
             <DivMovie key={movie.id}>
-              <DivImg style={{ backgroundImage: `url(${movie.poster?.url || ''})` }} />
+              <DivImg
+                onClick={() => handleOpenViewer(movie.id)}
+                style={{ backgroundImage: `url(${movie.poster?.url || ''})` }}
+              />
               <H1Movie>{movie.name}</H1Movie>
             </DivMovie>
           ))}
@@ -378,9 +397,7 @@ const MoviesSearch = () => {
       </ContainerMovieOutput>
       <ContainerAddMore>
         <DivBtnAddMore>
-          <Button>
-            <TextBtnAddMore>Добавить ещё</TextBtnAddMore>
-          </Button>
+          <TextBtnAddMore>Показать еще</TextBtnAddMore>
         </DivBtnAddMore>
       </ContainerAddMore>
     </div>
