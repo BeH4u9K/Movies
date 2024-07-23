@@ -3,10 +3,8 @@ import { TextField as MuiTextField, InputAdornment } from '@mui/material';
 import { styled } from '@mui/system';
 import SearchIcon from '@mui/icons-material/Search';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
-import { useNavigate, } from 'react-router-dom';
-
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-
 
 const Header = styled('header')({
   display: 'flex',
@@ -17,6 +15,13 @@ const Header = styled('header')({
   flexShrink: 0,
   width: '100%',
   padding: '10px 20px',
+  '@media (max-width: 900px)': {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
+  '@media (max-width: 600px)': {
+    padding: '10px',
+  },
 });
 
 const Logo = styled('div')({
@@ -30,25 +35,46 @@ const Logo = styled('div')({
   fontWeight: '500',
   fontSize: '40px',
   lineHeight: '56px',
+  cursor: 'pointer',
+  '@media (max-width: 900px)': {
+    marginBottom: '10px',
+  },
+  '@media (max-width: 600px)': {
+    fontSize: '32px',
+    width: '100%',
+    justifyContent: 'flex-start',
+  },
 });
 
 const ContainerButton = styled('div')({
   display: 'flex',
   alignItems: 'center',
   marginLeft: '20px',
+  '@media (max-width: 900px)': {
+    marginLeft: '0',
+    marginBottom: '10px',
+  },
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+  },
 });
 
 const Button = styled('button')({
   backgroundColor: 'transparent',
   transition: 'all 0.3s ease',
+  margin: '0 10px',
   '&:hover, &:focus, &:active': {
     borderColor: 'transparent',
     outline: 'none',
     boxShadow: 'none',
   },
+  '@media (max-width: 600px)': {
+    margin: '5px 0',
+  },
 });
 
-const СustomBtn = styled('button')({
+const CustomBtn = styled('button')({
   backgroundColor: '#f5f5f5',
   borderColor: 'transparent',
   borderRadius: '25px',
@@ -62,12 +88,23 @@ const СustomBtn = styled('button')({
     outline: 'none',
     boxShadow: 'none',
   },
+  '@media (max-width: 600px)': {
+    marginLeft: '0',
+    marginTop: '10px',
+    width: '100%',
+    justifyContent: 'center',
+  },
 });
 
 const ContainerInput = styled('div')({
   display: 'flex',
   alignItems: 'center',
   marginLeft: 'auto',
+  '@media (max-width: 900px)': {
+    width: '100%',
+    marginLeft: '0',
+    marginTop: '10px',
+  },
 });
 
 const TextField = styled(MuiTextField)({
@@ -90,10 +127,16 @@ const TextField = styled(MuiTextField)({
   '& .MuiInputLabel-root.Mui-focused': {
     color: 'gray',
   },
+  '@media (max-width: 600px)': {
+    marginLeft: '10px',
+  },
 });
 
 const StyledTuneRoundedIcon = styled(TuneRoundedIcon)({
   color: 'rgba(0, 0, 0, 0.54)',
+  '@media (max-width: 600px)': {
+    marginLeft: '10px',
+  },
 });
 
 const MoviesHeader: React.FC = () => {
@@ -111,7 +154,7 @@ const MoviesHeader: React.FC = () => {
 
   const onClick = (category: string) => {
     navigate(`/moviesSearch/${category}`);
-    console.log(category)
+    console.log(category);
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,7 +170,7 @@ const MoviesHeader: React.FC = () => {
   return (
     <div>
       <Header>
-        <Logo onClick={BackClick} style={{ cursor: 'pointer' }}>твоё.кино</Logo>
+        <Logo onClick={BackClick}>твоё.кино</Logo>
         <ContainerButton>
           <Button onClick={() => onClick('movie')}>Фильмы</Button>
           <Button onClick={() => onClick('tv-series')}>Сериалы</Button>
@@ -151,9 +194,9 @@ const MoviesHeader: React.FC = () => {
             }}
           />
         </ContainerInput>
-        <СustomBtn onClick={handleFindClick} >
+        <CustomBtn onClick={handleFindClick}>
           Найти
-        </СustomBtn>
+        </CustomBtn>
       </Header>
     </div>
   );

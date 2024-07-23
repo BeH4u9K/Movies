@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import React from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -9,6 +8,8 @@ import svgImage from '../Svg/fon.svg';
 import MoviesHeader from './MoviesHeader';
 import MuviesFooter from './MuviesFooter';
 import { useNavigate } from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 const settings = {
   infinite: true,
@@ -17,27 +18,37 @@ const settings = {
   slidesToScroll: 1,
   swipeToSlide: true,
   draggable: true,
+  responsive: [
+    {
+      breakpoint: 1024, // планшеты
+      settings: {
+        slidesToShow: 3,
+      }
+    },
+    {
+      breakpoint: 600, // телефоны
+      settings: {
+        slidesToShow: 1,
+      }
+    }
+  ]
 };
-
-const Button = styled('button')({
-  backgroundColor: 'transparent',
-  transition: 'all 0.3s ease',
-  '&:hover, &:focus, &:active': {
-    borderColor: 'transparent',
-    outline: 'none',
-    boxShadow: 'none',
-  },
-});
 
 const SliderDiv = styled('div')({
   width: '100%',
-  height: '450px',
+  height: '550px',
   marginTop: '50px',
   marginBottom: '100px',
   overflow: 'hidden',
   '.slick-slide': {
     padding: '0 10px',
     boxSizing: 'border-box',
+  },
+  '@media (max-width: 1024px)': {
+    height: '450px',
+  },
+  '@media (max-width: 600px)': {
+    height: '350px',
   },
 });
 
@@ -52,16 +63,31 @@ const Slid = styled('div')({
   backgroundSize: 'cover',
   backgroundRepeat: 'no-repeat',
   minHeight: '100px',
+  backgroundColor: 'gray',
   position: 'relative',
+  '@media (max-width: 1024px)': {
+    width: '200px',
+    height: '450px',
+  },
+  '@media (max-width: 600px)': {
+    width: '150px',
+    height: '350px',
+  },
 });
 
 const SlidFon = styled('div')({
   width: '100%',
-  height: '80%',
+  height: '550px',
   borderRadius: '15px',
   backgroundSize: 'cover',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
+  '@media (max-width: 1024px)': {
+    height: '450px',
+  },
+  '@media (max-width: 600px)': {
+    height: '350px',
+  },
 });
 
 const SvgDiv = styled('div')({
@@ -73,6 +99,12 @@ const SvgDiv = styled('div')({
   display: 'flex',
   minHeight: '696px',
   boxSizing: 'border-box',
+  '@media (max-width: 1024px)': {
+    minHeight: '500px',
+  },
+  '@media (max-width: 600px)': {
+    minHeight: '350px',
+  },
 });
 
 const TextDiv = styled('div')({
@@ -80,6 +112,14 @@ const TextDiv = styled('div')({
   height: '58px',
   marginLeft: '96px',
   marginTop: '366px',
+  '@media (max-width: 1024px)': {
+    marginLeft: '48px',
+    marginTop: '250px',
+  },
+  '@media (max-width: 600px)': {
+    marginLeft: '24px',
+    marginTop: '150px',
+  },
 });
 
 const TextSvg = styled('h2')({
@@ -89,6 +129,10 @@ const TextSvg = styled('h2')({
   fontWeight: '400',
   lineHeight: '29px',
   color: '#fff',
+  '@media (max-width: 600px)': {
+    fontSize: '18px',
+    lineHeight: '24px',
+  },
 });
 
 const TopMovies = styled('div')({
@@ -99,16 +143,32 @@ const TopMovies = styled('div')({
   textAlign: 'center',
   alignItems: 'center',
   marginTop: '0px',
+  '@media (max-width: 1024px)': {
+    height: '300px',
+  },
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+    height: 'auto',
+  },
 });
 
 const FirstTopMovies = styled('div')({
-  width: '90%',
+  width: '78%',
   height: '312px',
   display: 'inline-flex',
   justifyContent: 'center',
   alignItems: 'center',
   alignContent: 'center',
   cursor: 'pointer',
+  '@media (max-width: 1024px)': {
+    width: '90%',
+    height: '250px',
+  },
+  '@media (max-width: 600px)': {
+    width: '100%',
+    height: 'auto',
+    flexDirection: 'column',
+  },
 });
 
 const DivImg = styled('div')({
@@ -118,6 +178,14 @@ const DivImg = styled('div')({
   backgroundSize: 'cover',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
+  '@media (max-width: 1024px)': {
+    width: '180px',
+    height: '250px',
+  },
+  '@media (max-width: 600px)': {
+    width: '150px',
+    height: '200px',
+  },
 });
 
 const DivName = styled('div')({
@@ -125,6 +193,15 @@ const DivName = styled('div')({
   marginLeft: '33px',
   marginTop: '0px',
   display: 'block',
+  '@media (max-width: 1024px)': {
+    width: '200px',
+    marginLeft: '16px',
+  },
+  '@media (max-width: 600px)': {
+    width: '100%',
+    marginLeft: '0',
+    textAlign: 'center',
+  },
 });
 
 const H1name = styled('h1')({
@@ -135,9 +212,18 @@ const H1name = styled('h1')({
   fontSize: '32px',
   lineHeight: '38px',
   color: '#000000',
-
   height: '144px',
   display: 'flex',
+  '@media (max-width: 1024px)': {
+    fontSize: '24px',
+    lineHeight: '28px',
+    height: 'auto',
+  },
+  '@media (max-width: 600px)': {
+    fontSize: '20px',
+    lineHeight: '24px',
+    height: 'auto',
+  },
 });
 
 const Divgenre = styled('div')({
@@ -146,6 +232,14 @@ const Divgenre = styled('div')({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
+  '@media (max-width: 1024px)': {
+    width: '200px',
+    height: 'auto',
+  },
+  '@media (max-width: 600px)': {
+    width: '100%',
+    height: 'auto',
+  },
 });
 
 const H2genre = styled('h2')({
@@ -157,6 +251,14 @@ const H2genre = styled('h2')({
   fontSize: '24px',
   lineHeight: '29px',
   whiteSpace: 'pre-line',
+  '@media (max-width: 1024px)': {
+    fontSize: '20px',
+    lineHeight: '24px',
+  },
+  '@media (max-width: 600px)': {
+    fontSize: '18px',
+    lineHeight: '22px',
+  },
 });
 
 const H2year = styled('h2')({
@@ -167,6 +269,14 @@ const H2year = styled('h2')({
   fontWeight: '400',
   fontSize: '24px',
   lineHeight: '29px',
+  '@media (max-width: 1024px)': {
+    fontSize: '20px',
+    lineHeight: '24px',
+  },
+  '@media (max-width: 600px)': {
+    fontSize: '18px',
+    lineHeight: '22px',
+  },
 });
 
 const DivText = styled('div')({
@@ -179,6 +289,17 @@ const DivText = styled('div')({
   textAlign: 'center',
   borderRadius: '15px',
   border: '3px solid #4437DE',
+  '@media (max-width: 1024px)': {
+    width: '600px',
+    height: '250px',
+    marginLeft: '50px',
+  },
+  '@media (max-width: 600px)': {
+    width: '90%',
+    height: 'auto',
+    marginLeft: '0',
+    marginTop: '20px',
+  },
 });
 
 const H2Text = styled('h2')({
@@ -189,15 +310,41 @@ const H2Text = styled('h2')({
   fontSize: '24px',
   lineHeight: '29px',
   color: '#000000',
+  '@media (max-width: 600px)': {
+    fontSize: '20px',
+    lineHeight: '24px',
+  },
 });
 
-
 const DivNameText = styled('div')({
-  display:'flex',
-  justifyContent:'center',
-  textAlign:'center',
-  alignItems:"center"
-})
+  display: 'flex',
+  justifyContent: 'center',
+  textAlign: 'center',
+  alignItems: 'center',
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+  },
+});
+
+const DivShimmer = styled('div')({
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  textAlign: 'center',
+  alignItems: 'center',
+});
+
+const CastomError = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  textAlign: 'center',
+  alignItems: 'center',
+  width: '100%',
+  height: '45px'
+});
+
+const CastomBorder = styled('div')({});
 
 interface Movie {
   id: number;
@@ -218,15 +365,30 @@ const Movies: React.FC = () => {
   const navigate = useNavigate();
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <DivShimmer>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '10%' }}>
+          <CircularProgress style={{ color: '#4437DE' }} />
+        </Box>
+      </DivShimmer>
+    );
   }
 
-  if (error || !movies) {
-    return <div>Error loading movie data</div>;
+  if (error) {
+    if ('status' in error && error.status === 401) {
+      return <div>Ошибка: Не авторизован (401)</div>;
+    }
+    return <div>
+      <CastomError>
+        <CastomBorder>
+          Ошибка: {(error as any).data?.message || 'проверьте подключение к интернету'}
+        </CastomBorder>
+      </CastomError>
+    </div>;
   }
 
-  const onClick = () => {
-    navigate('/moviesSearch');
+  const handleOpenViewer = (id: number) => {
+    navigate(`/MoviesViewer/${id}`);
   };
 
   return (
@@ -246,14 +408,13 @@ const Movies: React.FC = () => {
           ))}
         </Slider>
       </SliderDiv>
-
       {movies.docs.slice(0, 3).map((movie: Movie) => (
         <TopMovies key={movie.id}>
-          <FirstTopMovies onClick={onClick}>
+          <FirstTopMovies onClick={() => handleOpenViewer(movie.id)}>
             <DivImg style={{ backgroundImage: `url(${movie.poster?.url || ''})` }} />
             <DivName>
               <DivNameText>
-              <H1name>{movie.name}</H1name>
+                <H1name>{movie.name}</H1name>
               </DivNameText>
               <Divgenre>
                 <H2genre>{movie.genres.map((genre) => genre.name).join(', ')}</H2genre>

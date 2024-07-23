@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MoviesHeader from './MoviesHeader';
+import MoviesFooter from './MuviesFooter';
 import { styled } from '@mui/system';
-import { Select, MenuItem, FormControl, InputLabel, TextField as MuiTextField } from '@mui/material';
+import { Select, MenuItem, FormControl, InputLabel, TextField as MuiTextField, CircularProgress, Box, Button as MuiButton, Stack } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useSelects } from './CustomSelect';
 import { useGetFilteredMoviesQuery } from '../services/api';
-import MoviesFooter from './MuviesFooter';
 import { useNavigate, useParams } from 'react-router-dom';
 
 interface Movie {
@@ -29,6 +29,9 @@ const DivSearch = styled('div')({
   justifyContent: 'center',
   textAlign: 'center',
   alignItems: 'center',
+  '@media (max-width: 600px)': {
+    height: 'auto',
+  },
 });
 
 const H1Search = styled('h1')({
@@ -43,6 +46,10 @@ const H1Search = styled('h1')({
   fontWeight: '500',
   fontSize: '40px',
   lineHeight: '56px',
+  '@media (max-width: 600px)': {
+    fontSize: '24px',
+    height: 'auto',
+  },
 });
 
 const DivCategories = styled('div')({
@@ -53,6 +60,11 @@ const DivCategories = styled('div')({
   alignItems: 'center',
   fontWeight: '500',
   fontSize: '40px',
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+    height: 'auto',
+    fontSize: '20px',
+  },
 });
 
 const DivSelect = styled('div')({
@@ -64,6 +76,12 @@ const DivSelect = styled('div')({
   width: '50%',
   height: '70px',
   marginLeft: '40px',
+  '@media (max-width: 600px)': {
+    width: '100%',
+    marginLeft: '0',
+    flexDirection: 'column',
+    height: 'auto',
+  },
 });
 
 const CustomFormControl = styled(FormControl)({});
@@ -79,6 +97,10 @@ const CustomSelect = styled(Select)({
   },
   '&:hover .MuiOutlinedInput-notchedOutline': {
     border: 'none',
+  },
+  '@media (max-width: 600px)': {
+    width: '100%',
+    height: '48px',
   },
 });
 
@@ -137,6 +159,15 @@ const TextField = styled(MuiTextField)({
   '& .MuiInputLabel-root.Mui-focused': {
     color: '',
   },
+  '@media (max-width: 600px)': {
+    fontSize: '20px',
+    width: '100%',
+    marginLeft: '0',
+    '& .MuiInputBase-root': {
+      marginLeft: '0',
+      width: '100%',
+    },
+  },
 });
 
 const DivInput = styled('div')({
@@ -146,14 +177,25 @@ const DivInput = styled('div')({
   justifyContent: 'space-between',
   height: '70px',
   marginRight: '40px',
+  '@media (max-width: 600px)': {
+    width: '100%',
+    marginRight: '0',
+    flexDirection: 'column',
+    height: 'auto',
+  },
 });
 
 const ContainerButton = styled('div')({
   display: 'flex',
   width: '20%',
+  '@media (max-width: 600px)': {
+    width: '100%',
+    marginTop: '10px',
+  },
 });
 
-const Button = styled('button')({
+const Button = styled(MuiButton)({
+
   width: '100%',
   height: '64px',
   display: 'flex',
@@ -167,11 +209,18 @@ const Button = styled('button')({
   fontFamily: 'Cambria',
   fontStyle: 'normal',
   fontWeight: '500',
-  fontSize: '35px',
+  fontSize: '20px',
+  color:'black',
   '&:hover, &:focus, &:active': {
     border: '2px solid #4437DE',
     outline: 'none',
     boxShadow: 'none',
+    backgroundColor: 'transparent',
+  },
+  '@media (max-width: 600px)': {
+    height: '48px',
+    fontSize: '20px',
+    
   },
 });
 
@@ -194,6 +243,15 @@ const DivContainerMovieOutput = styled('div')({
   boxSizing: 'border-box',
   justifyContent: 'center',
   alignItems: 'start',
+  '@media (max-width: 1200px)': {
+    gridTemplateColumns: 'repeat(3, 1fr)',
+  },
+  '@media (max-width: 900px)': {
+    gridTemplateColumns: 'repeat(2, 1fr)',
+  },
+  '@media (max-width: 600px)': {
+    gridTemplateColumns: '1fr',
+  },
 });
 
 const DivMovie = styled('div')({
@@ -214,7 +272,7 @@ const DivImg = styled('div')({
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
   backgroundColor: 'darkcyan',
-  cursor: 'pointer', // Добавляем указатель для показа, что элемент кликабелен
+  cursor: 'pointer',
 });
 
 const H1Movie = styled('h3')({
@@ -235,6 +293,9 @@ const ContainerAddMore = styled('div')({
 
 const DivBtnAddMore = styled('div')({
   width: '10%',
+  '@media (max-width: 600px)': {
+    width: '30%',
+  },
 });
 
 const TextBtnAddMore = styled('h3')({
@@ -242,6 +303,18 @@ const TextBtnAddMore = styled('h3')({
   fontStyle: 'normal',
   fontWeight: '500',
   fontSize: '18px',
+  '@media (max-width: 600px)': {
+    fontSize: '14px',
+  },
+});
+
+const DivShimmer = styled('div')({
+  width: '100%',
+  height: '100%',
+  display: 'flex',
+  justifyContent: 'center',
+  textAlign: 'center',
+  alignItems: 'center',
 });
 
 const MoviesSearch = () => {
@@ -272,6 +345,16 @@ const MoviesSearch = () => {
   }, [category]);
 
   const { data: movies, isLoading, error } = useGetFilteredMoviesQuery(filters);
+
+  if (isLoading) {
+    return (
+      <DivShimmer>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '10%' }}>
+          <CircularProgress style={{ color: '#4437DE' }} />
+        </Box>
+      </DivShimmer>
+    );
+  }
 
   const handleOpenViewer = (id: number) => {
     navigate(`/MoviesViewer/${id}`);
@@ -345,7 +428,7 @@ const MoviesSearch = () => {
         <DivCategories>
           <DivSelect>
             {labels.map((label, index) => (
-              <CustomFormControl fullWidth key={label}>
+              <CustomFormControl key={label} fullWidth>
                 <CustomInputLabel>{label}</CustomInputLabel>
                 <CustomSelect
                   value={selectedOptions[index]}
@@ -395,11 +478,7 @@ const MoviesSearch = () => {
           ))}
         </DivContainerMovieOutput>
       </ContainerMovieOutput>
-      <ContainerAddMore>
-        <DivBtnAddMore>
-          <TextBtnAddMore>Показать еще</TextBtnAddMore>
-        </DivBtnAddMore>
-      </ContainerAddMore>
+      <MoviesFooter />
     </div>
   );
 };
