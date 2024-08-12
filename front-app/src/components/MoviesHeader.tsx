@@ -158,7 +158,7 @@ const MoviesHeader: React.FC = () => {
   };
 
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(event.target.value);
+    setSearch(event.target.value);   
   };
 
   const handleFindClick = () => {

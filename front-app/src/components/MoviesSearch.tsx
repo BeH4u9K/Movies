@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import MoviesHeader from './MoviesHeader';
 import MoviesFooter from './MuviesFooter';
 import { styled } from '@mui/system';
-import { Select, MenuItem, FormControl, InputLabel, TextField as MuiTextField, CircularProgress, Box, Button as MuiButton, Stack } from '@mui/material';
+import {
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TextField as MuiTextField,
+  CircularProgress,
+  Box,
+  Button as MuiButton,
+  SelectChangeEvent,
+} from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useSelects } from './CustomSelect';
 import { useGetFilteredMoviesQuery } from '../services/api';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -19,7 +28,7 @@ interface Movie {
   }[];
   year: number;
   description: string;
-  [key: string]: any;
+  [key: string]: any; // Это может быть заменено конкретными типами, если вы знаете их
 }
 
 const DivSearch = styled('div')({
@@ -195,7 +204,6 @@ const ContainerButton = styled('div')({
 });
 
 const Button = styled(MuiButton)({
-
   width: '100%',
   height: '64px',
   display: 'flex',
@@ -210,17 +218,16 @@ const Button = styled(MuiButton)({
   fontStyle: 'normal',
   fontWeight: '500',
   fontSize: '20px',
-  color:'black',
+  color: 'black',
   '&:hover, &:focus, &:active': {
     border: '2px solid #4437DE',
     outline: 'none',
     boxShadow: 'none',
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(68, 55, 222, 0.25)',
   },
   '@media (max-width: 600px)': {
     height: '48px',
     fontSize: '20px',
-    
   },
 });
 
@@ -271,8 +278,9 @@ const DivImg = styled('div')({
   backgroundSize: 'cover',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
-  backgroundColor: 'darkcyan',
+  backgroundColor: 'rgba(68, 55, 222, 0.25)',
   cursor: 'pointer',
+  border: '2px solid #4437DE',
 });
 
 const H1Movie = styled('h3')({
@@ -282,32 +290,6 @@ const H1Movie = styled('h3')({
   textAlign: 'center',
 });
 
-const ContainerAddMore = styled('div')({
-  width: '100%',
-  height: '100px',
-  display: 'flex',
-  justifyContent: 'center',
-  textAlign: 'center',
-  alignItems: 'center',
-});
-
-const DivBtnAddMore = styled('div')({
-  width: '10%',
-  '@media (max-width: 600px)': {
-    width: '30%',
-  },
-});
-
-const TextBtnAddMore = styled('h3')({
-  fontFamily: 'Cambria',
-  fontStyle: 'normal',
-  fontWeight: '500',
-  fontSize: '18px',
-  '@media (max-width: 600px)': {
-    fontSize: '14px',
-  },
-});
-
 const DivShimmer = styled('div')({
   width: '100%',
   height: '100%',
@@ -315,15 +297,16 @@ const DivShimmer = styled('div')({
   justifyContent: 'center',
   textAlign: 'center',
   alignItems: 'center',
-});
 
+});
 const MoviesSearch = () => {
   const navigate = useNavigate();
-  const { selectedOptions, handleChange } = useSelects();
   const [year, setYear] = useState<string>('');
-  const [rating, setRating] = useState<string>(''); 
-  const { category } = useParams();
-  
+  const [rating, setRating] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [genre, setGenre] = useState<string>('');
+  const [country, setCountry] = useState<string>('');
+
   const [filters, setFilters] = useState<{
     category: string;
     genre: string;
@@ -338,13 +321,51 @@ const MoviesSearch = () => {
     rating: '',
   });
 
-  useEffect(() => {
-    if (category) {
-      setFilters(prevFilters => ({ ...prevFilters, category }));
-    }
-  }, [category]);
-
   const { data: movies, isLoading, error } = useGetFilteredMoviesQuery(filters);
+
+  console.log('Filters:', filters);
+  console.log('Movies Data:', movies);
+
+  const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setYear(event.target.value);
+  };
+
+  const handleRatingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRating(event.target.value);
+  };
+
+  const handleCategoryChange = (event: SelectChangeEvent<unknown>) => {
+    setCategory(event.target.value as string);
+  };
+
+  const handleGenreChange = (event: SelectChangeEvent<unknown>) => {
+    setGenre(event.target.value as string);
+  };
+
+  const handleCountryChange = (event: SelectChangeEvent<unknown>) => {
+    setCountry(event.target.value as string);
+  };
+
+  const handleSearch = () => {
+    console.log('Search triggered with filters:', {
+      category,
+      genre,
+      country,
+      year,
+      rating
+    });
+    setFilters({
+      category,
+      genre,
+      country,
+      year: year ? parseInt(year) : undefined,
+      rating: rating ? parseFloat(rating) : '',
+    });
+  };
+
+  const handleOpenViewer = (id: number) => {
+    navigate(`/MoviesViewer/${id}`);
+  };
 
   if (isLoading) {
     return (
@@ -356,70 +377,6 @@ const MoviesSearch = () => {
     );
   }
 
-  const handleOpenViewer = (id: number) => {
-    navigate(`/MoviesViewer/${id}`);
-  };
-
-  const labels = ['Категория', 'Жанр', 'Страна'];
-
-  const options = [
-    [
-      { value: 'movie', label: 'Фильм' },
-      { value: 'tv-series', label: 'Сериал' },
-      { value: 'anime', label: 'Аниме' },
-      { value: 'cartoon', label: 'Мультфильм' },
-    ],
-    [
-      { value: 'biography', label: 'Биография' },
-      { value: 'action', label: 'Боевик' },
-      { value: 'detective', label: 'Детектив' },
-      { value: 'children', label: 'Детский' },
-      { value: 'documentary', label: 'Документальный' },
-      { value: 'drama', label: 'Драма' },
-      { value: 'comedy', label: 'Комедия' },
-    ],
-    [
-      { value: 'usa', label: 'США' },
-      { value: 'ukraine', label: 'Украина' },
-      { value: 'russia', label: 'Россия' },
-      { value: 'uk', label: 'Великобритания' },
-      { value: 'india', label: 'Индия' },
-      { value: 'spain', label: 'Испания' },
-      { value: 'germany', label: 'Германия' },
-      { value: 'italy', label: 'Италия' },
-      { value: 'japan', label: 'Япония' },
-      { value: 'france', label: 'Франция' },
-      { value: 'china', label: 'Китай' },
-    ],
-  ];
-
-  const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setYear(event.target.value);
-  };
-
-  const handleRatingChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRating(event.target.value);
-  };
-
-  const handleSearch = () => {
-    const selectedCategory = selectedOptions[0];
-    const selectedGenre = selectedOptions[1];
-    const selectedCountry = selectedOptions[2];
-
-    const yearNum = parseInt(year);
-    const ratingNum = parseFloat(rating);
-
-    const newFilters = {
-      category: selectedCategory,
-      genre: selectedGenre,
-      country: selectedCountry,
-      year: isNaN(yearNum) ? undefined : yearNum,
-      rating: isNaN(ratingNum) ? '' : ratingNum,
-    };
-
-    setFilters(newFilters);
-  };
-
   return (
     <div>
       <MoviesHeader />
@@ -427,25 +384,61 @@ const MoviesSearch = () => {
         <H1Search>Поиск</H1Search>
         <DivCategories>
           <DivSelect>
-            {labels.map((label, index) => (
-              <CustomFormControl key={label} fullWidth>
-                <CustomInputLabel>{label}</CustomInputLabel>
-                <CustomSelect
-                  value={selectedOptions[index]}
-                  onChange={handleChange(index)}
-                  IconComponent={KeyboardArrowDownIcon}
-                >
-                  {options[index].map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </CustomSelect>
-              </CustomFormControl>
-            ))}
+            <CustomFormControl fullWidth>
+              <CustomInputLabel>Категория</CustomInputLabel>
+              <CustomSelect
+                value={category}
+                onChange={handleCategoryChange}
+                IconComponent={KeyboardArrowDownIcon}
+              >
+                <MenuItem value="">--</MenuItem>
+                <MenuItem value="movie">Фильм</MenuItem>
+                <MenuItem value="tv-series">Сериал</MenuItem>
+                <MenuItem value="anime">Аниме</MenuItem>
+                <MenuItem value="cartoon">Мультфильм</MenuItem>
+              </CustomSelect>
+            </CustomFormControl>
+            <CustomFormControl fullWidth>
+              <CustomInputLabel>Жанр</CustomInputLabel>
+              <CustomSelect
+                value={genre}
+                onChange={handleGenreChange}
+                IconComponent={KeyboardArrowDownIcon}
+              >
+                <MenuItem value="">--</MenuItem>
+                <MenuItem value="биография">Биография</MenuItem>
+                <MenuItem value="боевик">Боевик</MenuItem>
+                <MenuItem value="детектив">Детектив</MenuItem>
+                <MenuItem value="детский">Детский</MenuItem>
+                <MenuItem value="документальный">Документальный</MenuItem>
+                <MenuItem value="драма">Драма</MenuItem>
+                <MenuItem value="комедия">Комедия</MenuItem>
+              </CustomSelect>
+            </CustomFormControl>
+            <CustomFormControl fullWidth>
+              <CustomInputLabel>Страна</CustomInputLabel>
+              <CustomSelect
+                value={country}
+                onChange={handleCountryChange}
+                IconComponent={KeyboardArrowDownIcon}
+              ><MenuItem value="">--</MenuItem>
+                <MenuItem value="США">США</MenuItem>
+                <MenuItem value="Украина">Украина</MenuItem>
+                <MenuItem value="Россия">Россия</MenuItem>
+                <MenuItem value="Великобритания">Великобритания</MenuItem>
+                <MenuItem value="Индия">Индия</MenuItem>
+                <MenuItem value="Испания">Испания</MenuItem>
+                <MenuItem value="Германия">Германия</MenuItem>
+                <MenuItem value="Италия">Италия</MenuItem>
+                <MenuItem value="Япония">Япония</MenuItem>
+                <MenuItem value="Франция">Франция</MenuItem>
+                <MenuItem value="Китай">Китай</MenuItem>
+              </CustomSelect>
+            </CustomFormControl>
           </DivSelect>
           <DivInput>
             <TextField
+              autoComplete="off"
               placeholder="Год"
               variant="outlined"
               size="small"
@@ -453,6 +446,7 @@ const MoviesSearch = () => {
               onChange={handleYearChange}
             />
             <TextField
+              autoComplete="off"
               placeholder="Рейтинг"
               variant="outlined"
               size="small"
@@ -482,5 +476,4 @@ const MoviesSearch = () => {
     </div>
   );
 };
-
 export default MoviesSearch;

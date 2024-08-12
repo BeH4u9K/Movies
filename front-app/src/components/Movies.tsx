@@ -36,7 +36,7 @@ const settings = {
 
 const SliderDiv = styled('div')({
   width: '100%',
-  height: '550px',
+  height: '450px',
   marginTop: '50px',
   marginBottom: '100px',
   overflow: 'hidden',
@@ -54,7 +54,7 @@ const SliderDiv = styled('div')({
 
 const Slid = styled('div')({
   width: '250px',
-  height: '550px',
+  height: '450px',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-end',
@@ -77,7 +77,7 @@ const Slid = styled('div')({
 
 const SlidFon = styled('div')({
   width: '100%',
-  height: '550px',
+  height: '450px',
   borderRadius: '15px',
   backgroundSize: 'cover',
   backgroundRepeat: 'no-repeat',
